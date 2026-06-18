@@ -31,7 +31,7 @@
 
       do_something_with_url(f"https://httpbin.org/status/404", some_kw=42)
 
-   and retry on ``httpx2.HTTPError``.
+   and retry on :class:`httpx2.HTTPError`.
 
 .. autoclass:: BoundRetryingCaller
    :members: __call__

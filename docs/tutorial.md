@@ -32,7 +32,7 @@ Since retrying on {class}`Exception` is an [attractive nuisance](https://blog.ga
 ---
 
 Sometimes, an exception is too broad, though.
-For example, *httpx2* raises [`httpx2.HTTPStatusError`](https://www.python-httpx.org/exceptions/) on all HTTP errors.
+For example, *httpx2* raises {class}`httpx2.HTTPStatusError` on all HTTP errors.
 But some errors, like 404 (Not Found) or 403 (Forbidden), usually shouldn't be retried!
 
 To solve problems like this, you can pass a *backoff hook* to `on`.
@@ -107,7 +107,7 @@ Both `rc` and `bound_rc` run:
 do_something_with_url(f"https://httpbin.org/status/404", some_kw=42)
 ```
 
-and retry on `httpx2.HTTPError` and as before, the type hints are preserved.
+and retry on {class}`httpx2.HTTPError` and as before, the type hints are preserved.
 It's up to you whether you want to share only the retry configuration or the exception type to retry on, too.
 
 
