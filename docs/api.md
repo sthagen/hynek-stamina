@@ -13,15 +13,15 @@
    For example::
 
       def do_something_with_url(url, some_kw):
-          resp = httpx.get(url).raise_for_status()
+          resp = httpx2.get(url).raise_for_status()
           ...
 
       rc = stamina.RetryingCaller(attempts=5)
 
-      rc(httpx.HTTPError, do_something_with_url, f"https://httpbin.org/status/404", some_kw=42)
+      rc(httpx2.HTTPError, do_something_with_url, f"https://httpbin.org/status/404", some_kw=42)
 
       # Equivalent:
-      bound_rc = rc.on(httpx.HTTPError)
+      bound_rc = rc.on(httpx2.HTTPError)
 
       bound_rc(do_something_with_url, f"https://httpbin.org/status/404", some_kw=42)
 
@@ -31,7 +31,7 @@
 
       do_something_with_url(f"https://httpbin.org/status/404", some_kw=42)
 
-   and retry on ``httpx.HTTPError``.
+   and retry on ``httpx2.HTTPError``.
 
 .. autoclass:: BoundRetryingCaller
    :members: __call__

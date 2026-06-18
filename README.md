@@ -29,14 +29,14 @@ It is the result of years of copy-pasting the same configuration over and over a
 For example:
 
 ```python
-import httpx
+import httpx2
 
 import stamina
 
 
-@stamina.retry(on=httpx.HTTPError, attempts=3)
-def do_it(code: int) -> httpx.Response:
-    resp = httpx.get(f"https://httpbin.org/status/{code}")
+@stamina.retry(on=httpx2.HTTPError, attempts=3)
+def do_it(code: int) -> httpx2.Response:
+    resp = httpx2.get(f"https://httpbin.org/status/{code}")
     resp.raise_for_status()
 
     return resp

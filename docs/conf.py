@@ -64,7 +64,7 @@ if "dev" in release:
 exclude_patterns = ["_build"]
 
 nitpick_ignore = [
-    ("py:class", "httpx.HTTPError"),
+    ("py:class", "httpx2.HTTPError"),
     # ParamSpec is not well-supported.
     ("py:obj", "typing.~P"),
     ("py:class", "~P"),

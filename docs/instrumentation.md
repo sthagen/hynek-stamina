@@ -40,7 +40,7 @@ When it's active, retries are counted using the [counter](https://prometheus.io/
 - `retry_num`: The number of the current *retry*.
   So, if your callable failed once, this is set to 1.
 - `error_type`: The name of the exception **class** that caused the retry.
-  For example, `httpx.ConnectError`.
+  For example, `httpx2.ConnectError`.
 
 You can access the counter using {func}`stamina.instrumentation.get_prometheus_counter`.
 Note that it's `None` until the first retry is scheduled or you call {func}`stamina.instrumentation.get_on_retry_hooks`.

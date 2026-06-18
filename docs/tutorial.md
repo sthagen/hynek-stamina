@@ -10,29 +10,29 @@ If you're not sure why you should use retries in general or _stamina_ in particu
 The easiest way to add smart retries to your code is to decorate a callable with {func}`stamina.retry()`:
 
 ```python
-import httpx
+import httpx2
 
 import stamina
 
 
-@stamina.retry(on=httpx.HTTPError, attempts=3)
-def do_it(code: int) -> httpx.Response:
-    resp = httpx.get(f"https://httpbin.org/status/{code}")
+@stamina.retry(on=httpx2.HTTPError, attempts=3)
+def do_it(code: int) -> httpx2.Response:
+    resp = httpx2.get(f"https://httpbin.org/status/{code}")
     resp.raise_for_status()
 
     return resp
 
 # reveal_type(do_it)
-# note: Revealed type is "def (code: builtins.int) -> httpx._models.Response"
+# note: Revealed type is "def (code: builtins.int) -> httpx2._models.Response"
 ```
 
-This will retry the function up to 3 times if it raises an {class}`httpx.HTTPError` (or any subclass thereof).
+This will retry the function up to 3 times if it raises an {class}`httpx2.HTTPError` (or any subclass thereof).
 Since retrying on {class}`Exception` is an [attractive nuisance](https://blog.ganssle.io/articles/2023/01/attractive-nuisances.html), *stamina* doesn't do it by default and forces you to be explicit.
 
 ---
 
 Sometimes, an exception is too broad, though.
-For example, *httpx* raises [`httpx.HTTPStatusError`](https://www.python-httpx.org/exceptions/) on all HTTP errors.
+For example, *httpx2* raises [`httpx2.HTTPStatusError`](https://www.python-httpx.org/exceptions/) on all HTTP errors.
 But some errors, like 404 (Not Found) or 403 (Forbidden), usually shouldn't be retried!
 
 To solve problems like this, you can pass a *backoff hook* to `on`.
@@ -43,15 +43,15 @@ So, calling the following `do_it` function will only retry if <https://httpbin.o
 ```python
 def retry_only_on_real_errors(exc: Exception) -> bool:
     # If the error is an HTTP status error, only retry on 5xx errors.
-    if isinstance(exc, httpx.HTTPStatusError):
+    if isinstance(exc, httpx2.HTTPStatusError):
         return exc.response.status_code >= 500
 
-    # Otherwise retry on all httpx errors.
-    return isinstance(exc, httpx.HTTPError)
+    # Otherwise retry on all httpx2 errors.
+    return isinstance(exc, httpx2.HTTPError)
 
 @stamina.retry(on=retry_only_on_real_errors, attempts=3)
-def do_it(code: int) -> httpx.Response:
-    resp = httpx.get(f"https://httpbin.org/status/{code}")
+def do_it(code: int) -> httpx2.Response:
+    resp = httpx2.get(f"https://httpbin.org/status/{code}")
     resp.raise_for_status()
 
     return resp
@@ -74,9 +74,9 @@ Since iterators can't catch exceptions and context managers can't execute the sa
 *stamina* gives you the {func}`stamina.retry_context()` iterator which yields the necessary context managers:
 
 ```python
-for attempt in stamina.retry_context(on=httpx.HTTPError):
+for attempt in stamina.retry_context(on=httpx2.HTTPError):
     with attempt:
-        resp = httpx.get(f"https://httpbin.org/status/404")
+        resp = httpx2.get(f"https://httpbin.org/status/404")
         resp.raise_for_status()
 ```
 
@@ -87,16 +87,16 @@ If you want to retry just one function or method call, *stamina* comes with an e
 
 ```python
 def do_something_with_url(url, some_kw):
-    resp = httpx.get(url)
+    resp = httpx2.get(url)
     resp.raise_for_status()
     ...
 
 rc = stamina.RetryingCaller(attempts=5)
 
-rc(httpx.HTTPError, do_something_with_url, f"https://httpbin.org/status/404", some_kw=42)
+rc(httpx2.HTTPError, do_something_with_url, f"https://httpbin.org/status/404", some_kw=42)
 
 # You can also create a caller with a pre-bound exception type:
-bound_rc = rc.on(httpx.HTTPError)
+bound_rc = rc.on(httpx2.HTTPError)
 
 bound_rc(do_something_with_url, f"https://httpbin.org/status/404", some_kw=42)
 ```
@@ -107,7 +107,7 @@ Both `rc` and `bound_rc` run:
 do_something_with_url(f"https://httpbin.org/status/404", some_kw=42)
 ```
 
-and retry on `httpx.HTTPError` and as before, the type hints are preserved.
+and retry on `httpx2.HTTPError` and as before, the type hints are preserved.
 It's up to you whether you want to share only the retry configuration or the exception type to retry on, too.
 
 
@@ -121,22 +121,22 @@ import datetime as dt
 
 
 @stamina.retry(
-    on=httpx.HTTPError, attempts=3, timeout=dt.timedelta(seconds=10)
+    on=httpx2.HTTPError, attempts=3, timeout=dt.timedelta(seconds=10)
 )
-async def do_it_async(code: int) -> httpx.Response:
-    async with httpx.AsyncClient() as client:
+async def do_it_async(code: int) -> httpx2.Response:
+    async with httpx2.AsyncClient() as client:
         resp = await client.get(f"https://httpbin.org/status/{code}")
     resp.raise_for_status()
 
     return resp
 
 # reveal_type(do_it_async)
-# note: Revealed type is "def (code: builtins.int) -> typing.Coroutine[Any, Any, httpx._models.Response]"
+# note: Revealed type is "def (code: builtins.int) -> typing.Coroutine[Any, Any, httpx2._models.Response]"
 
-async def with_block(code: int) -> httpx.Response:
-    async for attempt in stamina.retry_context(on=httpx.HTTPError, attempts=3):
+async def with_block(code: int) -> httpx2.Response:
+    async for attempt in stamina.retry_context(on=httpx2.HTTPError, attempts=3):
         with attempt:
-            async with httpx.AsyncClient() as client:
+            async with httpx2.AsyncClient() as client:
                 resp = await client.get(f"https://httpbin.org/status/{code}")
             resp.raise_for_status()
 
